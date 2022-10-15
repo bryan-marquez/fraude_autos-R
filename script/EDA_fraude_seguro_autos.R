@@ -2,7 +2,7 @@
 
 ### Análisis Exploratorio de Datos (EDA)
 
-## carga de Datos
+## Carga de Datos
 
 # Cargamos los datos
 archivo <- "/cloud/project/data/Dataset.csv"
@@ -38,6 +38,20 @@ sapply(car_fraud, sd)
 y <- car_fraud$FraudFound_P
 cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
 
+## Visualización de Variables Categóricas
+
+# Cómo se distribuye el fraude por día de la semana de la reclamación
+ggplot(data = car_fraud,
+       mapping = aes(x = factor(DayOfWeekClaimed),
+                     fill = factor(FraudFound_P))) +
+  geom_bar(position = 'dodge', stat = 'count')
+
+# Cómo se distribuye el fraude por mes de la reclamación
+ggplot(data = car_fraud,
+       mapping = aes(x = factor(MonthClaimed),
+                     fill = factor(FraudFound_P))) +
+  geom_bar(position = 'dodge', stat = 'count')
+
 ## Visualización de Variables Numéricas
 
 # Creamos un dataframe solo para fraude encontrado
@@ -47,3 +61,28 @@ dim(fraud_found)
 
 # Cómo se distribuye el fraude por edad del asegurado
 hist(fraud_found$Age, main = 'Edad del Asegurado', xlab = 'Age')
+
+ggplot(data = car_fraud[car_fraud$FraudFound_P == 1,],
+       mapping = aes(x = Age,)) +
+  geom_histogram(bins = 9)
+
+ggplot(data = car_fraud,
+       mapping = aes(x = factor(FraudFound_P),
+                     y = Age,
+                     fill = FraudFound_P)) +
+  geom_boxplot() +
+  xlab('Age')
+
+# Cómo se distribuye el fraude por tamaño de la reclamación
+hist(fraud_found$ClaimSize, main = 'Tamaño de la Reclamación', xlab = 'ClaimSize')
+
+ggplot(data = car_fraud[car_fraud$FraudFound_P == 1,],
+       mapping = aes(x = ClaimSize,)) +
+  geom_histogram(bins = 9)
+
+ggplot(data = car_fraud,
+       mapping = aes(x = factor(FraudFound_P),
+                     y = ClaimSize,
+                     fill = FraudFound_P)) +
+  geom_boxplot() +
+  xlab('FraudFound_P')
