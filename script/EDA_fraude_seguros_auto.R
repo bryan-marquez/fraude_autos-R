@@ -1,8 +1,8 @@
 #### Análisis de Datos de Fraude en Seguros de Auto
 
-### Análisis Exploratorio de Datos (EDA)
+### 1. Análisis Exploratorio de Datos (EDA)
 
-## Carga de Datos
+## 1.1 Carga de Datos
 
 # Cargamos los datos
 archivo <- "/cloud/project/data/Dataset.csv"
@@ -16,7 +16,7 @@ dim(car_fraud)
 str(car_fraud)
 sapply(car_fraud, class)
 
-## Estadística Descriptiva
+## 1.2 Estadística Descriptiva
 
 # Resumimos las variables numéricas y categóricas
 summary(car_fraud)
@@ -33,13 +33,13 @@ sapply(car_fraud, sd)
 # Elaboramos la matriz de correlación
 #correlacion <- cor(car_fraud)
 
-## Análisis de la Variable Objetivo
+## 1.3 Análisis de la Variable Objetivo
 
 # Mostramos la proporción de la variable objetivo
 y <- car_fraud$FraudFound_P
 cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
 
-## Visualización de Variables Categóricas
+## 1.3.1 Visualización de Variables Categóricas
 
 # Cómo se distribuye el fraude por día de la semana de la reclamación
 ggplot(data = car_fraud,
@@ -53,7 +53,7 @@ ggplot(data = car_fraud,
                      fill = factor(FraudFound_P))) +
   geom_bar(position = 'dodge', stat = 'count')
 
-## Visualización de Variables Numéricas
+## 1.3.2 Visualización de Variables Numéricas
 
 # Creamos un dataframe solo para fraude encontrado
 library(tidyverse)
