@@ -52,9 +52,9 @@ sapply(car_fraud, class)
 ## 2.3 División de los Datos
 
 # Dividimos los datos
-dataframe <- select(car_fraud, -PolicyNumber) # quitamos PolicyNumber
+dataframe <- dplyr::select(car_fraud, -PolicyNumber) # quitamos PolicyNumber
 dim(dataframe)
-X <- select(dataframe, -FraudFound_P) # quitamos la variable objetivo
+X <- dplyr::select(dataframe, -FraudFound_P) # quitamos la variable objetivo
 dim(X)
 
 ## 2.4 Limpieza de Datos y Escalamiento de Variables
@@ -110,6 +110,6 @@ confusionMatrix(predictions, dataTest$FraudFound_P)
 
 ## Boostrap
 control <- trainControl(method = "boot", number = 100)
-fit <- train(FraudFound_P~., data = transformed, trControl = control, method = "nb", na.action = na.omit)
+fit <- train(FraudFound_P~., data = transformed[complete.cases(transformed),], trControl = control, method = "rf", na.action = na.exclude)
 predictions <- predict(fit, select(transformed, -FraudFound_P))
 confusionMatrix(predictions, transformed$FraudFound_P)
