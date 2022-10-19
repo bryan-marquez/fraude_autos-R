@@ -8,7 +8,6 @@
 archivo <- "/cloud/project/data/Dataset.csv"
 car_fraud <- read.csv(archivo)
 head(car_fraud)
-summary(car_fraud)
 
 ## 2.2 División de los Datos
 
@@ -48,3 +47,19 @@ sapply(transformed, function(x) sum(is.na(x)))
 # Transformamos los atributos con sesgo
 #transformed2 <- predict(boxcox, transformed)
 #head(transformed2)
+
+## 2.4 Remuestreo de los Datos
+
+# Dividimos los datos de entrenamiento y prueba
+trainIndex <- createDataPartition(transformed$FraudFound_P, p = 0.8, list = FALSE)
+dataTrain <- transformed[trainIndex, ]
+dataTest <- transformed[-trainIndex, ]
+
+# Ajustamos el modelo
+fit <- naiveBayes(FraudFound_P~., data = dataTrain)
+
+# Hacemos las predicciones
+predictions <- predict(fit, select(dataTest, -FraudFound_P, -PolicyNumber))
+
+# Elaboramos la matriz de confusión
+confusionMatrix(predictions$class, dataTest$FraudFound_P)
