@@ -2,11 +2,13 @@
 
 ### 2. Procesamiento de los Datos
 
+
 ## 2.1 Carga de librerías
 library(dplyr)
 library(caret)
 library(e1071)
 library(performanceEstimation)
+
 
 ## 2.2 Carga de Datos
 
@@ -22,6 +24,7 @@ dim(car_fraud)
 str(car_fraud)
 sapply(car_fraud, class)
 
+
 ## 2.3 División de los Datos
 
 # Dividimos los datos
@@ -29,6 +32,7 @@ dataframe <- dplyr::select(car_fraud, -PolicyNumber) # quitamos la variable iden
 dim(dataframe)
 X <- dplyr::select(dataframe, -FraudFound_P) # quitamos la variable objetivo
 dim(X)
+
 
 ## 2.4 Limpieza de Datos y Escalamiento de Variables
 
@@ -51,10 +55,10 @@ transformed <- predict(imputer, dataframe)
 head(transformed)
 sapply(transformed, function(x) sum(is.na(x)))
 
+
 ## 2.5 Codificación de Datos Categóricos
 
 # Convertimos a factor las variables categóricas ordinales y nominales
-
 transformed$FraudFound_P <- factor(transformed$FraudFound_P)
 transformed$Month <- factor(transformed$Month, levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 transformed$DayOfWeek <- factor(transformed$DayOfWeek, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
@@ -84,6 +88,7 @@ transformed$BasePolicy <- factor(transformed$BasePolicy, levels = c('Liability',
 str(transformed)
 sapply(transformed, function(x) sum(is.na(x)))
 
+
 ## 2.4 Sesgo / Asimetría
 
 # Aplicamos la transformación de Box-Cox o Yeo-Johnson a los atributos con sesgo
@@ -96,7 +101,18 @@ sapply(transformed, function(x) sum(is.na(x)))
 #transformed2 <- predict(boxcox, transformed)
 #head(transformed2)
 
-## 2.6 Remuestreo de los Datos
+
+## 2.6 Sobremuestreo de los Datos
+
+# Aplicamos sobremuestreo para balancear la clase usando SMOTE
+smoteTrain <- smote(FraudFound_P~., data = transformed)
+dim(smoteTrain)
+y <- smoteTrain$FraudFound_P
+cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
+sapply(smoteTrain, function(x) sum(is.na(x)))
+
+
+## 2.7 Remuestreo de los Datos
 
 # Boostrap
 control <- trainControl(method = "boot", number = 100)
@@ -104,22 +120,21 @@ control <- trainControl(method = "boot", number = 100)
 # Validación Cruzada
 control <- trainControl(method = "cv", number = 5)
 
-## 2.7 Sobremuestreo de los Datos
-#smoteTrain <- smote(FraudFound_P~., data = dataTrain)
 
 ## 2.8 Modelado
 
 # Ajustamos el modelo
 set.seed(7)
-fit <- train(FraudFound_P~., data = transformed, trControl = control, method = "nb", metric = "Accuracy", na.action = na.exclude)
+fit <- train(FraudFound_P~., data = smoteTrain, trControl = control, method = "nb", metric = "Accuracy")
 fit
 
 set.seed(7)
-fit <- train(FraudFound_P~., data = transformed, trControl = control, method = "glm", metric = "Accuracy", na.action = na.exclude)
+fit <- train(FraudFound_P~., data = smoteTrain, trControl = control, method = "glm", metric = "Accuracy", na.action = na.exclude)
 fit
 
 # Hacemos las predicciones
 #predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
+
 
 ## 2.9 Evaluación del Modelo
 
