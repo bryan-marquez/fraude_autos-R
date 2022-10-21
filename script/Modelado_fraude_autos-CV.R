@@ -105,11 +105,11 @@ sapply(transformed, function(x) sum(is.na(x)))
 ## 2.6 Sobremuestreo de los Datos
 
 # Aplicamos sobremuestreo para balancear la clase usando SMOTE
-smoteTrain <- smote(FraudFound_P~., data = transformed)
-dim(smoteTrain)
-y <- smoteTrain$FraudFound_P
+dataSMOTE <- smote(FraudFound_P~., data = transformed)
+dim(dataSMOTE)
+y <- dataSMOTE$FraudFound_P
 cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
-sapply(smoteTrain, function(x) sum(is.na(x)))
+sapply(dataSMOTE, function(x) sum(is.na(x)))
 
 
 ## 2.7 Remuestreo de los Datos
@@ -125,12 +125,14 @@ control <- trainControl(method = "cv", number = 5)
 
 # Ajustamos el modelo
 set.seed(7)
-fit <- train(FraudFound_P~., data = smoteTrain, trControl = control, method = "nb", metric = "Accuracy")
+fit <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "nb", metric = "Accuracy")
+summary(fit)
 fit
 
 set.seed(7)
-fit <- train(FraudFound_P~., data = smoteTrain, trControl = control, method = "glm", metric = "Accuracy", na.action = na.exclude)
+fit <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glm", metric = "Accuracy")
 fit
+summary(fit)
 
 # Hacemos las predicciones
 #predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
@@ -140,3 +142,16 @@ fit
 
 # Elaboramos la matriz de confusión
 #confusionMatrix(predictions, dataTest$FraudFound_P)
+
+
+## 2.10 Selección de Características
+
+# Seleccionamos las mejores características basadas en el modelo de regresión
+fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
+summary(fit_glm)
+
+# Seleccionamos las mejores características basadas en el modelo LVQ
+set.seed(7)
+model <- train(FraudFound_P~., data = dataSMOTE, method = "lvq", trControl = control)
+importance <- varImp(model, scale = FALSE)
+importance
