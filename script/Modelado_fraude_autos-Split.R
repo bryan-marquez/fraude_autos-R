@@ -2,11 +2,13 @@
 
 ### 2. Procesamiento de los Datos
 
+
 ## 2.1 Carga de librerías
 library(dplyr)
 library(caret)
 library(e1071)
 library(performanceEstimation)
+
 
 ## 2.2 Carga de Datos
 
@@ -22,6 +24,7 @@ dim(car_fraud)
 str(car_fraud)
 sapply(car_fraud, class)
 
+
 ## 2.3 División de los Datos
 
 # Dividimos los datos
@@ -29,6 +32,7 @@ dataframe <- dplyr::select(car_fraud, -PolicyNumber) # quitamos la variable iden
 dim(dataframe)
 X <- dplyr::select(dataframe, -FraudFound_P) # quitamos la variable objetivo
 dim(X)
+
 
 ## 2.4 Limpieza de Datos y Escalamiento de Variables
 
@@ -51,10 +55,10 @@ transformed <- predict(imputer, dataframe)
 head(transformed)
 sapply(transformed, function(x) sum(is.na(x)))
 
+
 ## 2.5 Codificación de Datos Categóricos
 
 # Convertimos a factor las variables categóricas ordinales y nominales
-
 transformed$FraudFound_P <- factor(transformed$FraudFound_P)
 transformed$Month <- factor(transformed$Month, levels = c('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
 transformed$DayOfWeek <- factor(transformed$DayOfWeek, levels = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
@@ -85,6 +89,7 @@ str(transformed)
 sapply(transformed, class)
 sapply(transformed, function(x) sum(is.na(x)))
 
+
 ## 2.4 Sesgo / Asimetría
 
 # Aplicamos la transformación de Box-Cox o Yeo-Johnson a los atributos con sesgo
@@ -97,6 +102,7 @@ sapply(transformed, function(x) sum(is.na(x)))
 #transformed2 <- predict(boxcox, transformed)
 #head(transformed2)
 
+
 ## 2.6 Remuestreo de los Datos
 
 # Dividimos los datos en entrenamiento y prueba
@@ -104,20 +110,37 @@ trainIndex <- createDataPartition(transformed$FraudFound_P, p = 0.8, list = FALS
 dataTrain <- transformed[trainIndex, ]
 dataTest <- transformed[-trainIndex, ]
 
+
 ## 2.7 Sobremuestreo de los Datos
 
 # Aplicamos sobre muestreo para balancear la clase usando SMOTE
-smoteTrain <- smote(FraudFound_P~., data = dataTrain)
+dataSMOTE <- smote(FraudFound_P~., data = dataTrain)
+
 
 ## 2.8 Modelado
 
 # Ajustamos el modelo
-fit <- e1071::naiveBayes(FraudFound_P~., data = smoteTrain)
+fit <- e1071::naiveBayes(FraudFound_P~., data = dataSMOTE)
 
 # Hacemos las predicciones
 predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
+
 
 ## 2.9 Evaluación del Modelo
 
 # Elaboramos la matriz de confusión
 confusionMatrix(predictions, dataTest$FraudFound_P)
+
+
+## 2.10 Selección de Características
+
+# Seleccionamos las mejores características basadas en el modelo de regresión
+fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
+summary(fit_glm)
+
+# Seleccionamos las mejores características basadas en el modelo LVQ
+set.seed(7)
+control <- trainControl(method = "cv", number = 5)
+model <- train(FraudFound_P~., data = dataSMOTE, method = "lvq", trControl = control)
+importance <- varImp(model, scale = FALSE)
+importance
