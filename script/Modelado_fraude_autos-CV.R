@@ -121,37 +121,40 @@ control <- trainControl(method = "boot", number = 100)
 control <- trainControl(method = "cv", number = 5)
 
 
-## 2.8 Modelado
-
-# Ajustamos el modelo
-set.seed(7)
-fit <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "nb", metric = "Accuracy")
-summary(fit)
-fit
-
-set.seed(7)
-fit <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glm", metric = "Accuracy")
-fit
-summary(fit)
-
-# Hacemos las predicciones
-#predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
-
-
-## 2.9 Evaluación del Modelo
-
-# Elaboramos la matriz de confusión
-#confusionMatrix(predictions, dataTest$FraudFound_P)
-
-
-## 2.10 Selección de Características
-
-# Seleccionamos las mejores características basadas en el modelo de regresión
-fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
-summary(fit_glm)
+## 2.8 Selección de Características
 
 # Seleccionamos las mejores características basadas en el modelo LVQ
 set.seed(7)
 model <- train(FraudFound_P~., data = dataSMOTE, method = "lvq", trControl = control)
 importance <- varImp(model, scale = FALSE)
 importance
+
+
+### 3 Modelado
+set.seed(7)
+
+## 3.1 Lineales
+
+# Ajustamos el modelo de Regresión Logística
+fit_glm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glm", metric = "Accuracy", na.action = na.omit)
+fit_glm
+
+# Hacemos las predicciones
+predictions <- predict(fit_glm, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+
+# Elaboramos la matriz de confusión
+confusionMatrix(predictions, dataSMOTE$FraudFound_P)
+
+
+## 3.2 No Lineales
+
+# Ajustamos el modelo de Naive Bayes
+fit_nb <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "nb", metric = "Accuracy", na.action = na.omit)
+fit_nb
+summary(fit_nb)
+
+# Hacemos las predicciones
+#predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
+
+# Elaboramos la matriz de confusión
+#confusionMatrix(predictions, dataTest$FraudFound_P)
