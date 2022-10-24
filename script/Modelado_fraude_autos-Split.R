@@ -115,24 +115,12 @@ dataTest <- transformed[-trainIndex, ]
 
 # Aplicamos sobre muestreo para balancear la clase usando SMOTE
 dataSMOTE <- smote(FraudFound_P~., data = dataTrain)
+dim(dataSMOTE)
+y <- dataSMOTE$FraudFound_P
+cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
+sapply(dataSMOTE, function(x) sum(is.na(x)))
 
-
-## 2.8 Modelado
-
-# Ajustamos el modelo
-fit <- e1071::naiveBayes(FraudFound_P~., data = dataSMOTE)
-
-# Hacemos las predicciones
-predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
-
-
-## 2.9 Evaluación del Modelo
-
-# Elaboramos la matriz de confusión
-confusionMatrix(predictions, dataTest$FraudFound_P)
-
-
-## 2.10 Selección de Características
+## 2.8 Selección de Características
 
 # Seleccionamos las mejores características basadas en el modelo de regresión
 fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
@@ -144,3 +132,31 @@ control <- trainControl(method = "cv", number = 5)
 model <- train(FraudFound_P~., data = dataSMOTE, method = "lvq", trControl = control)
 importance <- varImp(model, scale = FALSE)
 importance
+
+
+### 3. Modelado
+
+
+## 3.1 Lineales
+
+# Ajustamos el modelo de Regresión Logística
+fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
+summary(fit_glm)
+
+# Hacemos las predicciones
+predictions <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response")
+
+# Elaboramos la matriz de confusión
+confusionMatrix(predictions, dataTest$FraudFound_P)
+
+
+## 3.2 No Lineales
+
+# Ajustamos el modelo Naive Bayes
+fit_nb <- e1071::naiveBayes(FraudFound_P~., data = dataSMOTE)
+
+# Hacemos las predicciones
+predictions <- predict(fit_nb, newdata = dplyr::select(dataTest, -FraudFound_P))
+
+# Elaboramos la matriz de confusión
+confusionMatrix(predictions, dataTest$FraudFound_P)
