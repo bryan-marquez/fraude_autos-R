@@ -118,7 +118,7 @@ sapply(dataSMOTE, function(x) sum(is.na(x)))
 control <- trainControl(method = "boot", number = 100)
 
 # Validación Cruzada
-control <- trainControl(method = "cv", number = 5)
+control <- trainControl(method = "cv", number = 10)
 
 
 ## 2.8 Selección de Características
@@ -140,21 +140,23 @@ fit_glm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method =
 fit_glm
 
 # Hacemos las predicciones
-predictions <- predict(fit_glm, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_glm <- predict(fit_glm, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_glm
 
 # Elaboramos la matriz de confusión
-confusionMatrix(predictions, dataSMOTE$FraudFound_P)
-
+cf_glm <- confusionMatrix(pred_glm, dataSMOTE$FraudFound_P)
+cf_glm
 
 ## 3.2 No Lineales
 
 # Ajustamos el modelo de Naive Bayes
 fit_nb <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "nb", metric = "Accuracy", na.action = na.omit)
-fit_nb
 summary(fit_nb)
 
 # Hacemos las predicciones
-#predictions <- predict(fit, dplyr::select(dataTest, -FraudFound_P))
+pred_nb <- predict(fit_nb, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_nb
 
 # Elaboramos la matriz de confusión
-#confusionMatrix(predictions, dataTest$FraudFound_P)
+cf_nb <- confusionMatrix(pred_nb, dataSMOTE$FraudFound_P)
+cf_nb
