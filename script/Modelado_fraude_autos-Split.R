@@ -144,10 +144,12 @@ fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
 summary(fit_glm)
 
 # Hacemos las predicciones
-predictions <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response")
+pred_glm <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response", na.action = na.omit)
+pred_glm
 
 # Elaboramos la matriz de confusión
-confusionMatrix(predictions, dataTest$FraudFound_P)
+cf_glm <- confusionMatrix(pred_glm, dataTest$FraudFound_P)
+cf_glm
 
 
 ## 3.2 No Lineales
@@ -156,7 +158,9 @@ confusionMatrix(predictions, dataTest$FraudFound_P)
 fit_nb <- e1071::naiveBayes(FraudFound_P~., data = dataSMOTE)
 
 # Hacemos las predicciones
-predictions <- predict(fit_nb, newdata = dplyr::select(dataTest, -FraudFound_P))
+pred_nb <- predict(fit_nb, newdata = dplyr::select(dataTest, -FraudFound_P))
+pred_nb
 
 # Elaboramos la matriz de confusión
-confusionMatrix(predictions, dataTest$FraudFound_P)
+cf_nb <- confusionMatrix(pred_nb, dataTest$FraudFound_P)
+cf_nb
