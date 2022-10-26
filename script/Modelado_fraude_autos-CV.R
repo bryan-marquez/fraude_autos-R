@@ -115,7 +115,7 @@ sapply(dataSMOTE, function(x) sum(is.na(x)))
 ## 2.7 Remuestreo de los Datos
 
 # Boostrap
-control <- trainControl(method = "boot", number = 100)
+#control <- trainControl(method = "boot", number = 100)
 
 # Validación Cruzada
 control <- trainControl(method = "cv", number = 10)
@@ -133,6 +133,7 @@ importance
 ### 3 Modelado
 set.seed(7)
 
+
 ## 3.1 Lineales
 
 # Ajustamos el modelo de Regresión Logística
@@ -144,8 +145,21 @@ pred_glm <- predict(fit_glm, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
 pred_glm
 
 # Elaboramos la matriz de confusión
-cf_glm <- confusionMatrix(pred_glm, dataSMOTE$FraudFound_P)
+cf_glm <- confusionMatrix(data = pred_glm, reference = dataSMOTE$FraudFound_P)
 cf_glm
+
+# Ajustamos el modelo de Regresión Regularizada
+fit_glmnet <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glmnet", metric = "Accuracy", na.action = na.omit)
+fit_glmnet
+
+# Hacemos las predicciones
+pred_glmnet <- predict(fit_glmnet, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_glmnet
+
+# Elaboramos la matriz de confusión
+cf_glmnet <- confusionMatrix(data = pred_glmnet, reference = dataSMOTE$FraudFound_P)
+cf_glmnet
+
 
 ## 3.2 No Lineales
 
@@ -158,5 +172,42 @@ pred_nb <- predict(fit_nb, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
 pred_nb
 
 # Elaboramos la matriz de confusión
-cf_nb <- confusionMatrix(pred_nb, dataSMOTE$FraudFound_P)
+cf_nb <- confusionMatrix(data = pred_nb, reference = dataSMOTE$FraudFound_P)
 cf_nb
+
+# Ajustamos el modelo de KNN
+fit_knn <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "knn", metric = "Accuracy", na.action = na.omit)
+fit_knn
+
+# Hacemos las predicciones
+pred_knn <- predict(fit_knn, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_knn
+
+# Elaboramos la matriz de confusión
+cf_knn <- confusionMatrix(data = pred_knn, reference = dataSMOTE$FraudFound_P)
+cf_knn
+
+# Ajustamos el modelo de SVM
+fit_svm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "svmRadial", metric = "Accuracy", na.action = na.pass)
+fit_svm
+
+# Hacemos las predicciones
+pred_svm <- predict(fit_svm, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_svm
+
+# Elaboramos la matriz de confusión
+cf_svm <- confusionMatrix(data = pred_svm, reference = dataSMOTE$FraudFound_P)
+cf_svm
+
+# Ajustamos el modelo de CART
+fit_cart <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "rpart", metric = "Accuracy", na.action = na.pass)
+fit_cart
+
+# Hacemos las predicciones
+pred_cart <- predict(fit_cart, newdata = dplyr::select(dataSMOTE, -FraudFound_P))
+pred_cart
+
+# Elaboramos la matriz de confusión
+cf_cart <- confusionMatrix(data = pred_cart, reference = dataSMOTE$FraudFound_P)
+cf_cart
+dataSMOTE$FraudFound_P
