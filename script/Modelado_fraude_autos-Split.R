@@ -126,13 +126,6 @@ sapply(dataSMOTE, function(x) sum(is.na(x)))
 fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
 summary(fit_glm)
 
-# Seleccionamos las mejores características basadas en el modelo LVQ
-set.seed(7)
-control <- trainControl(method = "cv", number = 5)
-model <- train(FraudFound_P~., data = dataSMOTE, method = "lvq", trControl = control)
-importance <- varImp(model, scale = FALSE)
-importance
-
 
 ### 3. Modelado
 
@@ -144,8 +137,8 @@ fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
 summary(fit_glm)
 
 # Hacemos las predicciones
-pred_glm <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response", na.action = na.omit)
-pred_glm
+pred_glm <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response", na.action = na.exclude)
+pred_glm <- as.factor(pred_glm)
 
 # Elaboramos la matriz de confusión
 cf_glm <- confusionMatrix(pred_glm, dataTest$FraudFound_P)
