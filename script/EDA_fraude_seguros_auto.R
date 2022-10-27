@@ -2,6 +2,7 @@
 
 ### 1. Análisis Exploratorio de Datos (EDA)
 
+
 ## 1.1 Carga de Datos
 
 # Cargamos los datos
@@ -15,6 +16,7 @@ dim(car_fraud)
 # Mostramos los tipos de datos
 str(car_fraud)
 sapply(car_fraud, class)
+
 
 ## 1.2 Estadística Descriptiva
 
@@ -33,11 +35,13 @@ sapply(car_fraud, sd)
 # Elaboramos la matriz de correlación
 #correlacion <- cor(car_fraud)
 
+
 ## 1.3 Análisis de la Variable Objetivo
 
 # Mostramos la proporción de la variable objetivo
 y <- car_fraud$FraudFound_P
 cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
+
 
 ## 1.3.1 Visualización de Variables Categóricas
 
@@ -52,6 +56,7 @@ ggplot(data = car_fraud,
        mapping = aes(x = factor(MonthClaimed),
                      fill = factor(FraudFound_P))) +
   geom_bar(position = 'dodge', stat = 'count')
+
 
 ## 1.3.2 Visualización de Variables Numéricas
 
