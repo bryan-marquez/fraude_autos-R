@@ -4,6 +4,8 @@
 
 
 ## 2.1 Carga de librerías
+
+# Cargamos las liberías a utilizar
 library(dplyr)
 library(caret)
 library(e1071)
