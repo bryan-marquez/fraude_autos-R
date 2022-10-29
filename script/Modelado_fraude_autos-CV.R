@@ -139,7 +139,7 @@ set.seed(7)
 ## 3.1 Lineales
 
 # Ajustamos el modelo de Regresión Logística
-fit_glm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glm", metric = "Accuracy", na.action = na.omit)
+fit_glm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glm", metric = "Accuracy", na.action = na.exclude)
 fit_glm
 
 # Hacemos las predicciones
@@ -151,7 +151,7 @@ cf_glm <- confusionMatrix(data = pred_glm, reference = dataSMOTE$FraudFound_P)
 cf_glm
 
 # Ajustamos el modelo de Regresión Regularizada
-fit_glmnet <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glmnet", metric = "Accuracy", na.action = na.omit)
+fit_glmnet <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "glmnet", metric = "Accuracy", na.action = na.exclude)
 fit_glmnet
 
 # Hacemos las predicciones
@@ -166,7 +166,7 @@ cf_glmnet
 ## 3.2 No Lineales
 
 # Ajustamos el modelo de Naive Bayes
-fit_nb <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "nb", metric = "Accuracy", na.action = na.omit)
+fit_nb <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "nb", metric = "Accuracy", na.action = na.exclude)
 summary(fit_nb)
 
 # Hacemos las predicciones
@@ -178,7 +178,7 @@ cf_nb <- confusionMatrix(data = pred_nb, reference = dataSMOTE$FraudFound_P)
 cf_nb
 
 # Ajustamos el modelo de KNN
-fit_knn <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "knn", metric = "Accuracy", na.action = na.omit)
+fit_knn <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "knn", metric = "Accuracy", na.action = na.exclude)
 fit_knn
 
 # Hacemos las predicciones
@@ -190,7 +190,7 @@ cf_knn <- confusionMatrix(data = pred_knn, reference = dataSMOTE$FraudFound_P)
 cf_knn
 
 # Ajustamos el modelo de SVM
-fit_svm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "svmRadial", metric = "Accuracy", na.action = na.pass)
+fit_svm <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "svmRadial", metric = "Accuracy", na.action = na.exclude)
 fit_svm
 
 # Hacemos las predicciones
@@ -202,7 +202,7 @@ cf_svm <- confusionMatrix(data = pred_svm, reference = dataSMOTE$FraudFound_P)
 cf_svm
 
 # Ajustamos el modelo de CART
-fit_cart <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "rpart", metric = "Accuracy", na.action = na.pass)
+fit_cart <- train(FraudFound_P~., data = dataSMOTE, trControl = control, method = "rpart", metric = "Accuracy", na.action = na.exclude)
 fit_cart
 
 # Hacemos las predicciones
@@ -212,4 +212,3 @@ pred_cart
 # Elaboramos la matriz de confusión
 cf_cart <- confusionMatrix(data = pred_cart, reference = dataSMOTE$FraudFound_P)
 cf_cart
-dataSMOTE$FraudFound_P
