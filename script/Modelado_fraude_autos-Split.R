@@ -140,7 +140,7 @@ fit_glm <- glm(FraudFound_P~., data = dataSMOTE, family = "binomial")
 summary(fit_glm)
 
 # Hacemos las predicciones
-pred_glm <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response", na.action = na.exclude)
+pred_glm <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response")
 pred_glm
 
 # Elaboramos la matriz de confusión
