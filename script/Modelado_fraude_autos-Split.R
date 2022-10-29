@@ -122,6 +122,7 @@ y <- dataSMOTE$FraudFound_P
 cbind(Frecuencia = table(y), Porcentaje = prop.table(table(y))*100)
 sapply(dataSMOTE, function(x) sum(is.na(x)))
 
+
 ## 2.8 Selección de Características
 
 # Seleccionamos las mejores características basadas en el modelo de regresión
@@ -140,10 +141,10 @@ summary(fit_glm)
 
 # Hacemos las predicciones
 pred_glm <- predict(fit_glm, newdata =  dplyr::select(dataTest, -FraudFound_P), type = "response", na.action = na.exclude)
-pred_glm <- as.factor(pred_glm)
+pred_glm
 
 # Elaboramos la matriz de confusión
-cf_glm <- confusionMatrix(pred_glm, dataTest$FraudFound_P)
+cf_glm <- confusionMatrix(data = as.factor(as.numeric(pred_glm > 0.5)), reference = dataTest$FraudFound_P)
 cf_glm
 
 
